@@ -1,0 +1,139 @@
+\documentclass[a4paper,openany,11pt]{article}
+\usepackage[inner=1.0cm,outer=0.5cm,top=1cm,bottom=1cm]{geometry} %margen 2.54
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{csvsimple}
+\usepackage{graphicx}
+\usepackage{subcaption}
+% \usepackage{caption}
+% \captionsetup{justification=raggedright,singlelinecheck=false}
+% \pagenumbering{gobble}
+
+% \def\MINTED{} % need a way to define minted when calling tectonic
+\ifdefined\MINTED
+\usepackage[finalizecache]{minted}
+\else
+\usepackage[frozencache=true]{minted}
+\fi
+
+\usepackage{xurl}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    urlcolor = cyan,
+    % breaklinks = true, % seems it doesnt work in tectonic?
+}
+
+
+\newcommand\skiplines[1]{\vspace{#1\baselineskip}}
+
+\title{Tarea4 - Fundamentos y Diseño de Bases de Datos}
+\author{Alegria Sallo Daniel Rodrigo (215270)}
+
+
+\begin{document}
+
+
+\section[5]{Ejercicios Complementarios}
+Escribir las sentencias SELECT para obtener la siguiente informacion aplicando
+los conceptos de modularidad:
+
+
+\input{code.tex}
+
+\newpage
+\section[6]{Investigacion Formativa}
+Elaborar un resumen de las funciones internas TRANSACT SQL.
+Mas informacion en \url{https://learn.microsoft.com/en-us/sql/t-sql/functions/system-functions-transact-sql}
+
+\begin{enumerate}
+    \item{\textbf{Funciones Agregadas}}
+    \begin{itemize}
+        \item SUM(), AVG(), COUNT(), MIN(), MAX(): Realizan cálculos en un
+            conjunto de valores y devuelven un solo valor (e.g., suma,
+            promedio, conteo, mínimo, máximo).
+    \end{itemize}
+
+
+    \item{\textbf{Funciones Analíticas}}
+    \begin{itemize}
+        \item ROW\_NUMBER(): Asigna un número de fila único dentro de la
+            partición de un conjunto de resultados.
+        \item RANK(), DENSE\_RANK(): Asignan un rango a cada fila en una
+            partición, con o sin saltos.
+        \item NTILE(): Divide el conjunto de resultados en un número
+            especificado de grupos aproximadamente iguales.
+    \end{itemize}
+
+
+    \item{\textbf{Funciones de Manipulación de Bits}}
+    \begin{itemize}
+        \item BIT\_AND(), BIT\_OR(), BIT\_XOR(): Operan a nivel de bits en
+            enteros para realizar operaciones AND, OR y XOR.
+    \end{itemize}
+
+
+
+    \item{\textbf{Funciones de Clasificación}}
+    \begin{itemize}
+        \item CUME\_DIST(), PERCENT\_RANK(): Calculan la posición relativa de una
+            fila en una partición.
+    \end{itemize}
+
+
+    \item{\textbf{Funciones de Conjuntos de Filas}}
+    \begin{itemize}
+        \item STRING\_SPLIT(): Divide una cadena en una tabla de filas basada en un
+            delimitador.
+    \end{itemize}
+
+    \item{\textbf{Funciones Escalares}}
+
+    \begin{enumerate}
+        \item Funciones de Cadena:
+        \begin{itemize}
+            \item LEN(), SUBSTRING(), CHARINDEX(): Operan sobre cadenas
+                para obtener longitud, subcadenas, posición de subcadenas,
+                etc.
+            \item REPLACE(), UPPER(), LOWER(): Reemplazan subcadenas y
+                cambian el caso de las letras.
+        \end{itemize}
+
+        \item Funciones de Fecha y Hora:
+        \begin{itemize}
+            \item GETDATE(), SYSDATETIME(): Devuelven la fecha y hora actuales.
+            \item DATEADD(), DATEDIFF(): Manipulan fechas añadiendo intervalos
+                o calculando diferencias.
+        \end{itemize}
+
+        \item Funciones Matemáticas:
+        \begin{itemize}
+            \item ABS(), CEILING(), FLOOR(): Realizan operaciones matemáticas
+                básicas.
+            \item ROUND(), SQRT(), POWER(): Redondean números, calculan raíces
+                cuadradas y potencias.
+        \end{itemize}
+
+        \item Funciones de Conversión:
+        \begin{itemize}
+            \item CAST(), CONVERT(): Convierten datos de un tipo a otro.
+            \item PARSE(), TRY\_PARSE(): Convierten cadenas en tipos de datos, con manejo de errores.
+        \end{itemize}
+
+        \item Funciones de Metadatos:
+        \begin{itemize}
+            \item OBJECT\_ID(), OBJECT\_NAME(): Recuperan el identificador y
+                nombre de objetos en la base de datos.
+        \end{itemize}
+
+        \item Funciones de Seguridad:
+        \begin{itemize}
+            \item SUSER\_NAME(), SUSER\_SID(): Devuelven información sobre los
+                inicios de sesión de SQL Server.
+        \end{itemize}
+    \end{enumerate}
+\end{enumerate}
+
+\end{document}
+

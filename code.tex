@@ -1,0 +1,126 @@
+\begin{enumerate}
+\skiplines{1}
+\item Relacion de prestamos efectuados por los prestatarios de una
+determinanda comunidad.
+
+\begin{minted}[breaklines]{sql}
+WITH R(CodPrestatario, DocPrestamo) as (
+    SELECT P.CodPrestatario, P.DocPrestamo
+    FROM Prestamo P left outer join Amortizacion A on P.DocPrestamo = A.DocPrestamo
+    GROUP BY P.CodPrestatario, P.DocPrestamo
+    HAVING SUM(P.Importe) = SUM(IsNull(A.Importe, 0))
+)
+exec cr_CompletarPrestamos R;
+go
+\end{minted}
+
+\skiplines{}
+\item Relacion de prestatarios que hasta la fecha hayan efectuado mas de 5
+prestamos.
+
+\begin{minted}[breaklines]{sql}
+WITH
+R (CodComunidad, CodPrestatario) as (
+    SELECT Pio.CodComunidad, Pio.CodPrestatario
+    FROM Prestatario Pio inner join Prestamo Pmo on Pio.CodPrestatario = Pmo.CodPrestatario
+)
+exec cr_CompletarPrestamos R;
+go
+\end{minted}
+
+\skiplines{}
+\item Relacion de prestatarios morosos, es decir, aquellos que aun no han
+cancelado alguna de sus deudas y ya paso la fecha de vencimiento.
+
+\begin{minted}[breaklines]{sql}
+WITH
+R (CodPrestatario) as (
+    SELECT Pio.CodPrestatario
+    FROM Prestatario Pio inner join Prestamo Pmo on Pio.CodPrestatario = Pmo.CodPrestatario
+    GROUP BY Pio.CodPrestatario
+    HAVING COUNT(Pmo.DocPrestamo) > 5
+)
+exec cr_CompletarPrestatarios R;
+go
+\end{minted}
+
+\skiplines{}
+\item Relacion de las 5 comunidades que tienen el mayor numero de
+prestatarios.
+
+\begin{minted}[breaklines]{sql}
+WITH
+R (CodPrestatario) as (
+    SELECT P.CodPrestatario
+    FROM Prestamo P left outer join Amortizacion A on P.DocPrestamo = A.DocPrestamo
+    GROUP BY P.DocPrestamo, P.CodPrestatario, P.FechaVencimiento, P.Importe
+    HAVING SUM(IsNull(A.Importe, 0)) < P.Importe and GetDate() > P.FechaVencimiento
+)
+exec cr_CompletarPrestatarios R;
+go
+\end{minted}
+
+\skiplines{}
+\item Relacion de comunidades cuyos prestatarios que aun tienen saldos, no
+hayan efectuado ninguna amortizacion en lo que va del año 2004.
+
+\begin{minted}[breaklines]{sql}
+WITH
+R (CodComunidad, NroPrestatarios) as (
+    SELECT TOP(5) C.CodComunidad, COUNT(P.CodPrestatario) as NroPrestatarios
+    FROM Comunidad C inner join Prestatario P on C.CodComunidad = P.CodComunidad
+    GROUP BY C.CodComunidad
+    ORDER BY NroPrestatarios DESC
+)
+exec cr_CompletarComunidades R
+go
+\end{minted}
+
+\skiplines{1}
+\item Relacion de comunidades que no tengan prestatarios morosos.
+
+\begin{minted}[breaklines]{sql}
+WITH
+R1 (CodPrestatario) as (
+    SELECT P.CodPrestatario, P.DocPrestamo
+    FROM Prestamo P left outer join Amortizacion A on P.DocPrestamo = A.DocPrestamo
+    WHERE DATEPART(year, A.FechaCancelacion) = 2004
+    GROUP BY P.DocPrestamo
+    HAVING (SUM(P.Importe) > SUM(IsNull(A.Importe, 0)))
+),
+R2 (CodComunidad) as (
+    SELECT P.CodComunidad
+    FROM Prestatario P left outer join R1 on P.CodPrestatario = R1.DocPrestamo
+)
+exec cr_CompletarComunidades R2;
+go
+\end{minted}
+
+\skiplines{1}
+\item Relación de comunidades que tengan prestatarios morosos
+
+\begin{minted}[breaklines]{sql}
+WITH
+R1 (CodPrestatario) as (
+    SELECT P.CodPrestatario
+    FROM Prestamo P left outer join Amortizacion A on P.DocPrestamo = A.DocPrestamo
+    GROUP BY P.DocPrestamo, P.CodPrestatario, P.FechaVencimiento
+    HAVING SUM(IsNull(A.Importe, 0)) < SUM(P.Importe) and GetDate() > P.FechaVencimiento
+),
+R2 (CodComunidad) as (
+    SELECT P.CodComunidad
+    FROM Prestatario P, R1
+    WHERE P.CodPrestatario = R1.CodPrestatario
+),
+R3 (CodComunidad) as (
+    SELECT CodComunidad
+    FROM R1
+    EXCEPT
+    SELECT CodComunidad
+    FROM R2
+)
+exec cr_CompletarComunidades R2;
+go
+\end{minted}
+
+\end{enumerate}
